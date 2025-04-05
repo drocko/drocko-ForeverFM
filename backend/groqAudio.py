@@ -5,10 +5,10 @@ load_dotenv()
 
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-def createAudio(text:str="",file_path:str="audio/out.wav") -> None:
+def createAudio(text:str="",voice:str="Aaliyah-PlayAI",file_path:str="audio/out.wav") -> None:
     speech_file_path = file_path
     model = "playai-tts"
-    voice = "Aaliyah-PlayAI"
+    voice = voice
     response_format = "wav"
 
     response = client.audio.speech.create(
