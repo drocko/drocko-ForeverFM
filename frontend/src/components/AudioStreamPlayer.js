@@ -191,23 +191,6 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
           />
         </button>
 
-        <input
-  type="range"
-  min={0}
-  max={1}
-  step={0.1}
-  value={volume}
-  onChange={(e) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
-    if (gainNodeRef.current) {
-      gainNodeRef.current.gain.setValueAtTime(newVolume, audioContextRef.current.currentTime);
-    }
-    setIsMuted(newVolume < 0.1);
-  }}
-  className={styles.slider}
-/>
-
         <button onClick={toggleMuted} className={styles.button}>
           <Image
             src={!isMuted ? "/volume-high.svg" : "/volume-slash.svg"}
@@ -217,6 +200,23 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
             style={{ filter: "invert(1)" }}
           />
         </button>
+
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.1}
+          value={volume}
+          onChange={(e) => {
+            const newVolume = parseFloat(e.target.value);
+            setVolume(newVolume);
+            if (gainNodeRef.current) {
+              gainNodeRef.current.gain.setValueAtTime(newVolume, audioContextRef.current.currentTime);
+            }
+            setIsMuted(newVolume < 0.1);
+          }}
+          className={styles.slider}
+        />
       </div>
       <p>
         {Math.floor(position.elapsed / 60)}:{String(Math.floor(position.elapsed % 60)).padStart(2, '0')} / 
