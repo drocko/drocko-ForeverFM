@@ -48,12 +48,3 @@ Continue the podcast with the next speaker's turn. Keep the tone natural, insigh
         print("Error parsing Groq response:", e)
         print("Raw response text:", response.text)
         return {"speaker_name": "System", "text": "Error generating script."}
-    
-'''conv_topic = "AI Models and Life"
-scripts = [
-    {"speaker_name": "Bob", "text": "Hi Bob blah blah"},
-    {"speaker_name": "Alice", "text": "Hi Alice blah blah blah"},
-]
-
-new_script = generateContent(scripts, conv_topic)
-print(new_script)'''
