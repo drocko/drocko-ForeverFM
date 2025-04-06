@@ -37,7 +37,6 @@ current_playback_lock = threading.Lock()
 
 # Thread functions
 def continousMakeTranscript():
-    print('CONTINOUS MAKE TRANSCRIPT CALLED')
     global MOCK_NUMBER
     while True:
         time.sleep(5)  # sim time taken for processing
@@ -65,11 +64,9 @@ def continousMakeTranscript():
                 scripts.append(new_script)
                 if len(scripts) >= 10 and scripts[0]['is_audio_generated']:
                     scripts.pop(0)
-                print(scripts)
         
 def continousMakeAudio():
     while True:
-        print('I am RUNNING')
         time.sleep(5)  # sim time taken for processing
         
         script = None
@@ -199,7 +196,7 @@ thread2 = threading.Thread(target=continousMakeAudio, daemon=True)
 thread3 = threading.Thread(target=continousManageTopic, daemon=True)
 thread4 = threading.Thread(target=playbackManager, daemon=True)
 
-print("Starting thread1...")
+print("Starting background threads...")
 thread1.start()
 thread2.start()
 thread3.start()
