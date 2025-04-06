@@ -12,6 +12,10 @@ app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")  # Allow CORS for Next.js frontend
 
+# Some stupid globals
+MOCKING = True
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Shared variables
 conv_topic = "Initial Topic"
 scripts = [] # [{speaker_name: '', text: ''}, ...] # Newest last
@@ -19,6 +23,7 @@ user_prompts = [] # [{user_name: '', text: ''}, ...] # Newest last
 audio = [] # [{speaker_name: '', duration: '', text: '', filename: ''}] # Newest last
 current_playback = None  # Global playback state: {'audio': audio_obj, 'start_time': timestamp}
 last_sent_file = None
+
 
 # Lock for thread safety
 scripts_lock = threading.Lock()
@@ -47,8 +52,9 @@ def continousMakeTranscript():
         with user_prompts_lock:
             print(user_prompts)
         
-
+mock_audio_count = 0
 def continousMakeAudio():
+    global mock_audio_count
     while True:
         time.sleep(5)  # sim time taken for processing
         
@@ -60,14 +66,18 @@ def continousMakeAudio():
         script = {'speaker_name': 'Aaliyah', 'text': 'blah blah'} # Mock
         if script:
             
-            new_file_name = 'speech.wav' # For now
+            # new_file_name = 'speech.wav' # For now
+            new_file_name = f'mock_audio{mock_audio_count}.wav'
+            mock_audio_count += 1
+            if mock_audio_count > 7:
+                mock_audio_count = 0
             #new_file_name = f"{script['speaker_name']}-{round(time.time() * 1000)}"
             
 
             # Make a call to
             # generateAudio(new_file_name)
             
-            duration = get_wav_duration(new_file_name)
+            duration = get_wav_duration(new_file_name, MOCKING)
             new_audio_object = {
                 'speaker_name': script['speaker_name'],
                 'duration': duration,
@@ -75,6 +85,8 @@ def continousMakeAudio():
                 'filename': new_file_name
             }
 
+            print(new_audio_object)
+            print(audio)
             with audio_lock:
                 audio.append(new_audio_object)
                 if len(audio) > 10:
@@ -97,7 +109,10 @@ def broadcastPlaybackState(playback, elapsed):
     if playback:
         audio_obj = playback['audio']
         filename = audio_obj['filename']
-        audio_path = os.path.join("./audio", filename)
+        if MOCKING:
+            audio_path = os.path.join(BASE_DIR, "mock_data", "audio", filename)
+        else:
+            audio_path = os.path.join(BASE_DIR, "audio", filename)
 
         # Only broadcast if we haven't already sent this file
         if last_sent_file != filename and os.path.exists(audio_path):
