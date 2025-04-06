@@ -18,6 +18,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")  # Allow CORS for Next.js fro
 MOCK_NUMBER = 0
 MOCKING = True
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MAX_Q_SIZE = 10
 
 # Shared variables
 conv_topic = "Initial Topic"
@@ -45,7 +46,7 @@ def continousMakeTranscript():
         with scripts_lock:
             len_scripts = len(scripts)
         
-        if len_scripts < 10:
+        if len_scripts < MAX_Q_SIZE:
             # Send only the last 4 scripts for context
             new_script = generateContent.generateContent(scripts[-4:], conv_topic, mock=MOCKING, mock_number=MOCK_NUMBER)
             new_script['mock_number'] = MOCK_NUMBER
@@ -62,7 +63,7 @@ def continousMakeTranscript():
 
             with scripts_lock:
                 scripts.append(new_script)
-                if len(scripts) >= 10 and scripts[0]['is_audio_generated']:
+                if len(scripts) >= MAX_Q_SIZE and scripts[0]['is_audio_generated']:
                     scripts.pop(0)
         
 def continousMakeAudio():
@@ -95,7 +96,7 @@ def continousMakeAudio():
 
             with audio_lock:
                 audio.append(new_audio_object)
-                if len(audio) > 10:
+                if len(audio) > MAX_Q_SIZE:
                     pa = audio.pop(0) # For now
                     
                     # If MOCKING is enabled, delete the corresponding file
@@ -107,7 +108,7 @@ def continousMakeAudio():
             
             with scripts_lock:
                 scripts[script_index]['is_audio_generated'] = True
-                if len(scripts) >= 10:
+                if len(scripts) >= MAX_Q_SIZE:
                     scripts.pop(0)
                 print(f"Scripts is {len(scripts)} elements")
 
