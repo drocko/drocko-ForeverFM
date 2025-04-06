@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import styles from "./AudioStreamPlayer.module.css";
 
 export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/audio" }) {
@@ -24,7 +25,13 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
 
       <div className={styles.controls}>
         <button onClick={() => setIsPlaying(!isPlaying)} className={styles.button}>
-          {isPlaying ? "⏸" : "▶"}
+          <Image
+            src={isPlaying ? "/stream-pause.svg" : "/stream-play.svg"}
+            alt={isPlaying ? "Pause" : "Play"}
+            width={18}
+            height={18}
+            style={{ filter: "invert(1)" }}
+          />
         </button>
 
         <input
@@ -38,21 +45,13 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
         />
 
         <button onClick={() => setVolume(volume > 0 ? 0 : 1)} className={styles.button}>
-          {volume > 0 ? (
-            <img
-              alt=""
-              src="https://www.svgrepo.com/show/535722/volume-high.svg"
-              style={{ filter: "invert(1)" }}
-              width={15}
-            />
-          ) : (
-            <img
-              alt=""
-              src="https://www.svgrepo.com/show/535727/volume-slash.svg"
-              style={{ filter: "invert(1)" }}
-              width={15}
-            />
-          )}
+          <Image
+            src={volume > 0 ? "/volume-high.svg" : "/volume-slash.svg"}
+            alt={volume > 0 ? "Volume on" : "Muted"}
+            width={18}
+            height={18}
+            style={{ filter: "invert(1)" }}
+          />
         </button>
       </div>
     </div>
