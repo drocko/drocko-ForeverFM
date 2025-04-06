@@ -40,3 +40,7 @@ a {
     color-scheme: dark;
   }
 }
+
+.geist-header {
+  font-family: var(--font-geist-sans);
+}

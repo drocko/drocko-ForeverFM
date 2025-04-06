@@ -1,28 +1,57 @@
-// src/app/live/page.js (ForeverFM Live Stream Page)
+"use client";
+import ChatBox from "../../components/ChatBox";
+import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import styles from "../styles/page.module.css";
 
 export default function Stream() {
+  const [isPlaying] = useState(true);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>ForeverFM Live Stream</h1>
-        <p className={styles.description}>
-          Tune in to a continuous, AI-generated stream of engaging podcast
-          conversations. ForeverFM blends voices, topics, and personalities to
-          create a never-ending flow of thought-provoking content—available
-          24/7, right here.
-        </p>
-        <p className={styles.description}>
-          Whether you're working, relaxing, or commuting, ForeverFM keeps your
-          mind active with unique dialogue every time you listen.
-        </p>
-        <div className={styles.ctas}>
+    <div className={styles.page} style={{ width: "100%", maxWidth: "1200px", margin: "0 auto" }}>
+      <main className={styles.main} style={{ width: "100%", gap: "1rem" }}>
+        {/* Header */}
+        <div style={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "0.5rem"
+        }}>
+          <h1 className={styles.title} style={{ textAlign: "left", marginBottom: "0" }}>
+            ForeverFM: AI Podcast Stream
+          </h1>
+          <p style={{ color: "#f44", fontWeight: "bold" }}>🔴 Live now</p>
+        </div>
+
+        {/* Stream + Chat layout */}
+        <div className={styles.streamLayout}>
+          <div className={styles.streamContent}>
+            <Image
+              src="/av-stock-photo.png"
+              alt="Podcast simulation"
+              width={400}
+              height={400}
+              className={styles.responsiveImage}
+            />
+
+          </div>
+
+          <div className={styles.chatWrapper}>
+            <ChatBox />
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <div className={styles.ctas} style={{ marginTop: "2rem" }}>
           <Link href="/" className={styles.primary}>
             ← Back to Home
           </Link>
         </div>
       </main>
+
       <footer className={styles.footer}>
         <p>© 2025 ForeverFM🎙️</p>
       </footer>

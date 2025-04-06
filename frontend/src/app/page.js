@@ -34,6 +34,7 @@ export default function Home() {
       </main>
       <footer className={styles.footer}>
         <p>© 2025 ForeverFM🎙️</p>
+        {/* <p>Sponsored by NVIDIA, Google, Groq and more!</p> */}
       </footer>
     </div>
   );

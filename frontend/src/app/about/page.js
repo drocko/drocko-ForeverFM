@@ -22,14 +22,9 @@ export default function About() {
         <p>Made by 4 BeaverHackers 🦫</p>
 
         <p className={styles.description}>
-          ForeverFM is a collaborative experiment between 4 students coming together at Oregon State University's Hackathon.
+          ForeverFM is a collaborative experiment between 4 passionate students coming together at Oregon State University's BeaverHacks.
           We’re exploring the frontier of AI-driven storytelling—blending voice synthesis, language models,
           and a love for spontaneous conversation.
-        </p>
-
-        <p className={styles.description}>
-          We’re 4 happy participants in the BeaverHacks Hackathon at Oregon State University, working together to bring
-          this wild concept to life. From design and development to voice and vibe, we each contribute a piece of the puzzle.
         </p>
 
         <div className={styles.ctas}>
@@ -40,7 +35,8 @@ export default function About() {
       </main>
 
       <footer className={styles.footer}>
-        <p>© 2025 ForeverFM</p>
+        <p>© 2025 ForeverFM🎙️</p>
+        {/* <p>Sponsored by NVIDIA, Google, Groq and more!</p> */}
       </footer>
     </div>
   );

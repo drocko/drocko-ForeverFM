@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        <Header /> {/* Injected here */}
+      <Header className="geist-header" />
         {children}
       </body>
     </html>

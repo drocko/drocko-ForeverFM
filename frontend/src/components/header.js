@@ -14,11 +14,18 @@ import Link from "next/link";
 export default function Header() {
   return (
     <header style={{
-      padding: "1rem 2rem",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      borderBottom: "1px solid rgba(0,0,0,0.1)"
+        fontFamily: 'var(--font-geist-sans)', // <- this line
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        background: "var(--background)",
+        padding: "0.5rem 1rem",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        borderBottom: "1px solid rgba(0,0,0,0.1)"
     }}>
       <Link href="/">
         <Image
