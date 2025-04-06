@@ -218,10 +218,10 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
           className={styles.slider}
         />
       </div>
-      <p>
+{/*      <p>
         {Math.floor(position.elapsed / 60)}:{String(Math.floor(position.elapsed % 60)).padStart(2, '0')} / 
         {Math.floor(position.duration / 60)}:{String(Math.floor(position.duration % 60)).padStart(2, '0')}
-      </p>
+      </p>*/}
     </div>
   );
 }
