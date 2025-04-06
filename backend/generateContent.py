@@ -1,5 +1,7 @@
 import os
 import requests
+import json
+import random
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -12,7 +14,20 @@ def format_script_history(scripts):
         formatted += f"{turn['speaker_name']}: {turn['text']}\n"
     return formatted.strip()
 
-def generateContent(scripts, conv_topic):
+def generateContent(scripts, conv_topic, mock=True):
+    if mock:
+        i = random.randint(0, 7)
+        mock_file_path = f"mock_data/mock_script{i}.json"
+        try:
+            with open(mock_file_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading mock script {i}:", e)
+            return {
+                "speaker_name": "System",
+                "text": "Mock script could not be loaded."
+            }
+    
     history = format_script_history(scripts)
     prompt = f"""
 You are helping write an ongoing podcast about **{conv_topic}**.
@@ -35,7 +50,7 @@ Continue the podcast with the next speaker's turn. Keep the tone natural, insigh
 
     try:
         json_data = response.json()
-        print("Groq Response JSON:", json_data)  # Debug print
+        #print("Groq Response JSON:", json_data)  # Debug print
 
         message = json_data['choices'][0]['message']['content']
         lines = message.strip().split("\n", 1)
