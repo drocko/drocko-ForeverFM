@@ -11,6 +11,7 @@
   align-items: center;
   justify-items: center;
   min-height: 100svh;
+  max-height: 100vsh;
   padding: 80px;
   gap: 64px;
   font-family: var(--font-geist-sans);
@@ -32,6 +33,7 @@
   flex-direction: column;
   gap: 32px;
   grid-row-start: 2;
+  max-width: 36rem;
 }
 
 .main ol {
@@ -96,6 +98,8 @@ a.secondary {
   grid-row-start: 3;
   display: flex;
   gap: 24px;
+  flex-direction: column;
+  align-items:center;
 }
 
 .footer a {
@@ -163,6 +167,54 @@ a.secondary {
 
 @media (prefers-color-scheme: dark) {
   .logo {
-    filter: invert();
+    /* filter: invert(); */
+  }
+}
+
+.streamLayout {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 2rem;
+  align-items: stretch;
+}
+
+.streamContent {
+  flex: 3;
+  min-width: 0;
+}
+
+.chatWrapper {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  max-height: 540px;
+}
+
+/* Mobile: stack vertically */
+@media (max-width: 768px) {
+  .streamLayout {
+    flex-direction: column;
+  }
+
+  .chatWrapper {
+    max-height: none;
+  }
+}
+
+.responsiveImage {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .responsiveImage {
+    max-height: 220px;
+    border-radius: 8px;
   }
 }
