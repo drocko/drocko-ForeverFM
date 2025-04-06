@@ -3,8 +3,8 @@ import Image from "next/image";
 
 export default function Avatars() {
   const avatars = [
-    { name: "Echo", src: "/avatar1.png", role: "Tech Analyst" },
-    { name: "Nova", src: "/avatar2.png", role: "Culture Curator" },
+    { name: "Aaliyah", src: "/avatar1.png", role: "Tech Analyst" },
+    { name: "Chip", src: "/avatar2.png", role: "Culture Curator" },
   ];
 
   return (

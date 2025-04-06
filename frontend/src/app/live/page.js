@@ -28,8 +28,10 @@ export default function Stream() {
         </div>
 
         {/* Stream + Chat layout */}
+
         <div className={styles.streamLayout}>
           <div className={styles.streamContent}>
+
             <Image
               src="/av-stock-photo.png"
               alt="Podcast simulation"
@@ -44,7 +46,7 @@ export default function Stream() {
           </div>
 
         </div>
-
+        
         {/* Avatar Widget */}
         <Avatars />
 
