@@ -35,6 +35,10 @@ def continousMakeTranscript():
             scripts.append(new_script)
             if len(scripts) >= 10:
                 scripts.pop(0)
+
+        # Just to test:
+        with user_prompts_lock:
+            print(user_prompts)
         
 
 def continousMakeAudio():
@@ -81,7 +85,7 @@ thread3.start()
 # Endpoints
 @app.route('/chat-prompt', methods=['POST'])
 def chat_prompt():
-    user_input = request.json.get('user_input')
+    user_input = request.json.get('user_prompt')
     
     if user_input:
         with user_prompts_lock:
