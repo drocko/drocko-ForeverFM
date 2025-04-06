@@ -19,5 +19,3 @@ def createAudio(text:str="",voice:str="Aaliyah-PlayAI",file_path:str="audio/out.
     )
 
     response.write_to_file(speech_file_path)
-
-createAudio("Hey what's up gang!")
