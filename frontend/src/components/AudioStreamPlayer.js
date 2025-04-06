@@ -19,19 +19,21 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
   const offsetTimeRef = useRef(0);
   const gainNodeRef = useRef(null);
 
-  const audioRef = useRef(null);
+  // const audioRef = useRef(null);
   const [volume, setVolume] = useState(1);
 
   const togglePlayback = () => {
+    if (audioContextRef?.current?.state === "suspended") {
+      audioContextRef.current.resume();
+    }
+    
     if (!audioContextRef.current) {
-      // Create audio context on first interaction
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
       gainNodeRef.current = audioContextRef.current.createGain();
       gainNodeRef.current.connect(audioContextRef.current.destination);
       setIsReady(true);
     }
   
-    // Toggle mute instead of stopping the audio
     if (isPlaying && !isMuted) {
       gainNodeRef.current.gain.setValueAtTime(0, audioContextRef.current.currentTime); // mute
       setIsPlaying(false);
@@ -47,7 +49,7 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
       offsetTimeRef.current = position.elapsed;
       playNextInQueue();
     }
-  }; 
+  };
   
   const toggleMuted = () => {
     if (!isMuted && isPlaying) {
@@ -64,15 +66,16 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
   }
 
   const playNextInQueue = () => {
-    if (queueRef.current.length === 0) return;
+    if (!audioContextRef.current || queueRef.current.length === 0 || !isPlaying) return;
   
     const buffer = queueRef.current.shift();
     const source = audioContextRef.current.createBufferSource();
     source.buffer = buffer;
-    source.connect(gainNodeRef.current); // route through gain node
+    source.connect(gainNodeRef.current);
   
     source.onended = () => {
-      playNextInQueue(); // Always continue playback
+      currentSourceRef.current = null;
+      playNextInQueue(); // continue
     };
   
     source.start(0);
@@ -83,7 +86,10 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
 
   useEffect(() => {
     // Connect to the WebSocket server
-    socketRef.current = io("http://localhost:5001"); // Use http:// for Socket.IO
+    socketRef.current = io("http://localhost:5001", {
+      transports: ["websocket"],
+      forceNew: true,
+    });
 
     socketRef.current.on("connect", () => {
       console.log("Connected to WebSocket");
@@ -94,19 +100,44 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
     });
 
     socketRef.current.on("audio", (data) => {
-      // Only decode and queue audio if we have an audio context
-      if (audioContextRef.current) {
-        const audioBinaryData = new Uint8Array(data.data);
-        audioContextRef.current.decodeAudioData(audioBinaryData.buffer)
-          .then((decodedBuffer) => {
-            queueRef.current.push(decodedBuffer);
-            if (isPlaying) {
-              playNextInQueue(); // Try playing if currently playing
-            }
-          })
-          .catch((err) => console.error("Audio decode error:", err));
+      console.log("Received audio event");
+    
+      if (data instanceof Blob) {
+        // If it's a Blob (unlikely with socket.io), convert to ArrayBuffer
+        data.arrayBuffer().then((arrayBuffer) => {
+          decodeAndQueue(arrayBuffer);
+        });
+      } else if (data.data && data.data instanceof ArrayBuffer) {
+        decodeAndQueue(data.data);
+      } else if (data.data && data.data.buffer) {
+        // Likely a Uint8Array from backend raw bytes (your case)
+        decodeAndQueue(data.data.buffer);
+      } else {
+        console.warn("Unrecognized audio data format", data);
       }
     });
+    
+    function decodeAndQueue(arrayBuffer) {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+        gainNodeRef.current = audioContextRef.current.createGain();
+        gainNodeRef.current.connect(audioContextRef.current.destination);
+        setIsReady(true);
+      }
+    
+      audioContextRef.current.decodeAudioData(arrayBuffer)
+        .then((decodedBuffer) => {
+          console.log("Decoded audio buffer");
+          queueRef.current.push(decodedBuffer);
+          if (isPlaying && !currentSourceRef.current) {
+            playNextInQueue();
+          }
+        })
+        .catch((err) => {
+          console.error("Audio decode error:", err);
+        });
+    }
+    
 
     socketRef.current.on("transcript", (data) => {
       setTranscript(data.data);
@@ -134,20 +165,20 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
     }
   }, [isReady, isPlaying]);
 
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-      if (isPlaying) {
-        audioRef.current.play().catch(console.error);
-      } else {
-        audioRef.current.pause();
-      }
-    }
-  }, [isPlaying, volume]);
+  // useEffect(() => {
+  //   if (audioRef.current) {
+  //     audioRef.current.volume = volume;
+  //     if (isPlaying) {
+  //       audioRef.current.play().catch(console.error);
+  //     } else {
+  //       audioRef.current.pause();
+  //     }
+  //   }
+  // }, [isPlaying, volume]);
 
   return (
     <div className={styles.player}>
-      <audio ref={audioRef} src={audioSrc} autoPlay loop />
+      {/* <audio ref={audioRef} src={audioSrc} autoPlay loop /> */}
 
       <div className={styles.controls}>
         <button onClick={togglePlayback} className={styles.button}>
@@ -161,22 +192,21 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
         </button>
 
         <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.1}
-          value={volume}
-          onChange={(e) => {
-            setVolume(parseFloat(e.target.value))
-            if (volume >= 0.2) setIsMuted(false)
-            if (volume < 0.2) {
-              setIsMuted(true)
-              gainNodeRef.current.gain.setValueAtTime(0, audioContextRef.current.currentTime);
-            } else if (isPlaying) {
-              gainNodeRef.current.gain.setValueAtTime(volume, audioContextRef.current.currentTime);
-          }}}
-          className={styles.slider}
-        />
+  type="range"
+  min={0}
+  max={1}
+  step={0.1}
+  value={volume}
+  onChange={(e) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (gainNodeRef.current) {
+      gainNodeRef.current.gain.setValueAtTime(newVolume, audioContextRef.current.currentTime);
+    }
+    setIsMuted(newVolume < 0.1);
+  }}
+  className={styles.slider}
+/>
 
         <button onClick={toggleMuted} className={styles.button}>
           <Image

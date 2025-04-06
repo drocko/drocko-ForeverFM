@@ -18,7 +18,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")  # Allow CORS for Next.js fro
 MOCK_NUMBER = 0
 MOCKING = True
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MAX_Q_SIZE = 10
+MAX_Q_SIZE = 3
 should_be_generating_new_data = True
 
 # Shared variables
@@ -165,18 +165,22 @@ def broadcastPlaybackState(playback, elapsed):
     """Broadcasts playback updates using a snapshot and precomputed elapsed time."""
     global last_sent_file
     if playback:
+        print('Playback')
         audio_obj = playback['audio']
         filename = audio_obj['filename']
-        if MOCKING:
-            audio_path = os.path.join(BASE_DIR, "mock_data", "audio", filename)
-        else:
-            audio_path = os.path.join(BASE_DIR, "audio", filename)
+
+        audio_path = os.path.join(BASE_DIR, "audio", filename)
 
         # Only broadcast if we haven't already sent this file
+        print("Audio path: ", audio_path)
+        print("Last sent", last_sent_file, filename)
         if last_sent_file != filename and os.path.exists(audio_path):
+            print("Hitting here")
             with open(audio_path, "rb") as f:
+                print("Inside the with")
                 audio_data = f.read()
                 socketio.emit("audio", {"data": audio_data, "file": filename})
+                print('Emitted audio')
             
             last_sent_file = filename
             socketio.emit("transcript", {"data": audio_obj['text']})
@@ -218,6 +222,7 @@ def playbackManager():
             playback_snapshot = current_playback
 
         # Broadcast state even if no playback (to keep clients updated)
+        print("Broadcast Playback called")
         broadcastPlaybackState(playback_snapshot, elapsed)
 
         # Dynamic sleep to minimize gaps between audio files
@@ -260,7 +265,9 @@ def handle_connect():
         if os.path.exists(audio_path):
             with open(audio_path, "rb") as f:
                 audio_data = f.read()
+                print('NEW CONNECTION EMIT!!!')
                 socketio.emit("audio", {"data": audio_data, "file": filename}, to=request.sid)
+                print('Emitted audio')
         # Send transcript and position to the new client
         socketio.emit("transcript", {"data": audio_obj['text']}, to=request.sid)
         socketio.emit("position", {
