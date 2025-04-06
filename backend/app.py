@@ -151,7 +151,7 @@ def continousManageTopic():
                         scripts = [transition_script]
                         print(f'Scripts is now {len(scripts)} long')
                     with audio_lock:
-                        audio = audio[:2] # May need to change the logic here
+                        audio = audio[:1] # May need to change the logic here
                         print(f'Audio is now {len(audio)} long')
                 should_be_generating_new_data = True
                 broadcastNewTopic(new_topic)
