@@ -38,7 +38,7 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
         />
 
         <button onClick={() => setVolume(volume > 0 ? 0 : 1)} className={styles.button}>
-          {volume > 0 ? "🔊" : "🔇"}
+          {volume > 0 ? '<img alt="" src="https://www.svgrepo.com/show/535722/volume-high.svg" style="filter:invert(1)" width=15>' : '<img alt="" src="https://www.svgrepo.com/show/535727/volume-slash.svg" style="filter:invert(1)" width=15>'}
         </button>
       </div>
     </div>
