@@ -17,12 +17,15 @@ conv_topic = "Initial Topic"
 scripts = [] # [{speaker_name: '', text: ''}, ...] # Newest last
 user_prompts = [] # [{user_name: '', text: ''}, ...] # Newest last
 audio = [] # [{speaker_name: '', duration: '', text: '', filename: ''}] # Newest last
+current_playback = None  # Global playback state: {'audio': audio_obj, 'start_time': timestamp}
+last_sent_file = None
 
 # Lock for thread safety
 scripts_lock = threading.Lock()
 audio_lock = threading.Lock()
 conv_topic_lock = threading.Lock()
 user_prompts_lock = threading.Lock()
+current_playback_lock = threading.Lock()  # Lock for current_playback
 
 # Thread functions
 def continousMakeTranscript():
@@ -76,7 +79,6 @@ def continousMakeAudio():
                 audio.append(new_audio_object)
                 if len(audio) > 10:
                     audio.pop(0) # For now
-                print(audio)
             
             print(f"Generated audio for {script['speaker_name']} duration: {round(duration, 2)} sec saved to: {new_file_name}")
         
@@ -89,23 +91,110 @@ def continousManageTopic():
     #         if scripts:
     #             convTopic = f"Updated Topic based on: {scripts[-1]}"
 
+def broadcastPlaybackState(playback, elapsed):
+    """Broadcasts playback updates using a snapshot and precomputed elapsed time."""
+    global last_sent_file
+    if playback:
+        audio_obj = playback['audio']
+        filename = audio_obj['filename']
+        audio_path = os.path.join("./audio", filename)
+
+        # Only broadcast if we haven't already sent this file
+        if last_sent_file != filename and os.path.exists(audio_path):
+            with open(audio_path, "rb") as f:
+                audio_data = f.read()
+                socketio.emit("audio", {"data": audio_data, "file": filename})
+            
+            last_sent_file = filename
+            socketio.emit("transcript", {"data": audio_obj['text']})
+
+        # Always broadcast position
+        socketio.emit("position", {
+            "file": filename,
+            "elapsed_time": elapsed,
+            "duration": audio_obj['duration'],
+            "timestamp": int(time.time() * 1000)
+        })
+
+
+def playbackManager():
+    """Manages continuous audio playback, queuing and playing files seamlessly."""
+    global current_playback, last_sent_file
+    while True:
+        playback_snapshot = None
+        elapsed = 0
+                
+        with current_playback_lock:
+            if current_playback:
+                elapsed = time.time() - current_playback['start_time']
+                duration = current_playback['audio']['duration']
+                if elapsed >= duration:
+                    with audio_lock:
+                        if audio:
+                            audio.pop(0)
+                    current_playback = None
+                    last_sent_file = None
+                    elapsed = 0
+
+            if not current_playback and audio:
+                with audio_lock:
+                    if audio:
+                        current_playback = {'audio': audio[0], 'start_time': time.time()}
+                        print(f"Starting playback: {current_playback['audio']['filename']}")
+            
+            playback_snapshot = current_playback
+
+        # Broadcast state even if no playback (to keep clients updated)
+        broadcastPlaybackState(playback_snapshot, elapsed)
+
+        # Dynamic sleep to minimize gaps between audio files
+        if playback_snapshot:
+            remaining = current_playback['audio']['duration'] - elapsed
+            # Sleep for remaining time or 1 second, whichever is shorter
+            sleep_time = min(max(remaining, 0), 1)
+            time.sleep(sleep_time)
+        else:
+            time.sleep(1)  # Default sleep when no playback
 
 # Start bg threads
 thread1 = threading.Thread(target=continousMakeTranscript, daemon=True)
 thread2 = threading.Thread(target=continousMakeAudio, daemon=True)
 thread3 = threading.Thread(target=continousManageTopic, daemon=True)
+thread4 = threading.Thread(target=playbackManager, daemon=True)
 
 thread1.start()
 thread2.start()
 thread3.start()
+thread4.start()
 
-# Socket Endpoint
 @socketio.on("connect")
 def handle_connect():
-    # Log connection and get the client's session ID
+    """Sends current playback state to a newly connected client."""
     print("Client connected:", request.sid)
-    # Start streaming thread, passing the client's sid
-    threading.Thread(target=stream_to_client, args=(request.sid,), daemon=True).start()
+    
+    cp = None
+    with current_playback_lock:
+        cp = current_playback
+
+    if cp:
+        audio_obj = cp['audio']
+        elapsed = time.time() - cp['start_time']
+        filename = audio_obj['filename']
+        audio_path = os.path.join("./audio", filename)
+        
+        # Send audio file to the new client only
+        if os.path.exists(audio_path):
+            with open(audio_path, "rb") as f:
+                audio_data = f.read()
+                socketio.emit("audio", {"data": audio_data, "file": filename}, to=request.sid)
+        # Send transcript and position to the new client
+        socketio.emit("transcript", {"data": audio_obj['text']}, to=request.sid)
+        socketio.emit("position", {
+            "file": filename,
+            "elapsed_time": elapsed,
+            "duration": audio_obj['duration'],
+            "timestamp": int(time.time() * 1000)
+        }, to=request.sid)
 
 def get_current_audio():
     # Retrieve the oldest audio from the queue, if available
