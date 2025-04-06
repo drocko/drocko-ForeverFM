@@ -6,27 +6,57 @@ export default function About() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <h1 className={styles.title}>About ForeverFM</h1>
+        {/* Hero */}
+        <section style={{ textAlign: "center" }}>
 
-        {/* <div className={styles.imageContainer}>
+          <h1 className={styles.title}>Meet the Forever Team</h1>
+
+          <div className={styles.imageContainer}>
+            <Image
+              src="/About-Photo-Styled.png"
+              alt="ForeverFM Team"
+              width={300}
+              height={300}
+              className={`${styles.teamPhoto} ${styles.primary}`}
+              priority
+            />
+          </div>
+
           <Image
-            src="/About-Photo.png"
-            alt="ForeverFM Team"
-            width={300}
-            height={200}
-            className={styles.teamPhoto}
-            priority
-          />
-        </div> */}
+              src="/ForeverFM Microphone Icon.png"
+              alt="Podcast simulation"
+              width={25}
+              height={35}
+            />
 
-        <p>Made by 4 BeaverHackers 🦫</p>
 
-        <p className={styles.description}>
-          ForeverFM is a collaborative experiment between 4 passionate students coming together at Oregon State University's BeaverHacks.
-          We’re exploring the frontier of AI-driven storytelling—blending voice synthesis, language models,
-          and a love for spontaneous conversation.
-        </p>
+          <p style={{ marginTop: "1rem", fontWeight: "500" }}>
+            The Original Beaverhackers 🦫
+          </p>
+          
+        </section>
 
+        {/* Story */}
+        <section style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <p className={styles.description}>
+          ForeverFM is a collaborative experiment born at Oregon State University's BeaverHacks—where four students came together to explore the frontier of AI-driven storytelling.
+          We're exploring the frontier of language models, voice synthesis, and the vibe of collaborative creativity.
+          </p>
+
+          <p className={styles.description}>
+            Huge thanks to the event organizers and sponsors who made BeaverHacks possible. Without your support, this project—and this team—wouldn’t exist.
+          </p>
+
+          <p className={styles.description} style={{ fontStyle: "italic" }}>
+            Signing off with optimism, determination, and growth—  
+            <br />
+            —The ForeverFM Team 🎙️
+          </p>
+          
+        </section>
+
+      
+        {/* CTA */}
         <div className={styles.ctas}>
           <Link href="/" className={styles.primary}>
             ← Back to Home
@@ -35,8 +65,7 @@ export default function About() {
       </main>
 
       <footer className={styles.footer}>
-        <p>© 2025 ForeverFM🎙️</p>
-        {/* <p>Sponsored by NVIDIA, Google, Groq and more!</p> */}
+        <p>© 2025 ForeverFM 🎙️</p>
       </footer>
     </div>
   );
