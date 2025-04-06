@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "../styles/page.module.css";
+import Avatars from "../../components/Avatar";
 
 export default function Stream() {
   const [isPlaying] = useState(true);
@@ -27,8 +28,10 @@ export default function Stream() {
         </div>
 
         {/* Stream + Chat layout */}
+
         <div className={styles.streamLayout}>
           <div className={styles.streamContent}>
+
             <Image
               src="/av-stock-photo.png"
               alt="Podcast simulation"
@@ -36,13 +39,16 @@ export default function Stream() {
               height={400}
               className={styles.responsiveImage}
             />
-
           </div>
 
           <div className={styles.chatWrapper}>
             <ChatBox />
           </div>
+
         </div>
+        
+        {/* Avatar Widget */}
+        <Avatars />
 
         {/* Navigation */}
         <div className={styles.ctas} style={{ marginTop: "2rem" }}>
