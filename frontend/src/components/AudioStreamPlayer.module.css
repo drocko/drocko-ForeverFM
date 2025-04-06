@@ -1,0 +1,37 @@
+.player {
+    background-color: #111;
+    border-radius: 12px;
+    padding: 1rem;
+    color: #eee;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    flex-direction: column;
+  }
+  
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .button {
+    background-color: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .slider {
+    width: 120px;
+    accent-color: #22c55e;
+  }
+  

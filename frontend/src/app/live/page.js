@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "../styles/page.module.css";
 import Avatars from "../../components/Avatar";
+import AudioStreamPlayer from "../../components/AudioStreamPlayer";
 
 export default function Stream() {
   const [isPlaying] = useState(true);
@@ -28,6 +29,7 @@ export default function Stream() {
         </div>
 
         {/* Stream + Chat layout */}
+        <AudioStreamPlayer audioSrc="http://localhost:5000/audio" />
 
         <div className={styles.streamLayout}>
           <div className={styles.streamContent}>
