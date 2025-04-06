@@ -1,12 +1,13 @@
 import os
 import requests
 import json
-import random
 from dotenv import load_dotenv
 load_dotenv()
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+mock_number = 0
 
 def format_script_history(scripts):
     formatted = ""
@@ -16,17 +17,19 @@ def format_script_history(scripts):
 
 def generateContent(scripts, conv_topic, mock=True):
     if mock:
-        i = random.randint(0, 7)
-        mock_file_path = f"mock_data/scripts/mock_script{i}.json"
+        mock_file_path = f"mock_data/scripts/mock_script{mock_number}.json"
         try:
             with open(mock_file_path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
-            print(f"Error loading mock script {i}:", e)
+            print(f"Error loading mock script {mock_number}:", e)
             return {
                 "speaker_name": "System",
                 "text": "Mock script could not be loaded."
             }
+        mock_number += 1
+        if mock_number > 7:
+            mock_number = 0
     
     history = format_script_history(scripts)
     prompt = f"""
