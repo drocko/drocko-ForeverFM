@@ -4,11 +4,13 @@ import threading
 import time
 import os
 from getWavFileDuration import get_wav_duration
+from flask_socketio import SocketIO, emit
 
 
 # Initialize Flask app and CORS
 app = Flask(__name__)
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")  # Allow CORS for Next.js frontend
 
 # Shared variables
 conv_topic = "Initial Topic"
@@ -93,6 +95,77 @@ thread1.start()
 thread2.start()
 thread3.start()
 
+# Socket Endpoint
+@socketio.on("connect")
+def handle_connect():
+    print("Client connected")
+    threading.Thread(target=stream_to_client, daemon=True).start()
+
+def get_current_audio():
+    # Retrieve the oldest audio from the queue, if available
+    with audio_lock:
+        if audio:
+            return audio[0]  # Returns dict with speaker_name, duration, text, filename
+        return None
+
+def send_audio_data(current_audio, last_file):
+    # Send audio file and metadata when a new file starts
+    if current_audio and (not last_file or last_file != current_audio['filename']):
+        filename = current_audio['filename']
+        audio_path = os.path.join("path/to/audio/files", filename)
+        
+        # Notify client of the new file
+        emit("new_file", {"file": filename})
+        
+        # Send the audio file as binary data if it exists
+        if os.path.exists(audio_path):
+            with open(audio_path, "rb") as f:
+                emit("audio", f.read(), binary=True)
+        
+        # Send the transcript associated with this audio
+        emit("transcript", {"data": current_audio['text']})
+        return filename  # Return the filename to mark it as sent
+    return last_file  # No new file, keep the last one
+
+def send_position_update(current_audio, last_file, start_time):
+    # Send playback position if there's an active audio file
+    if last_file and current_audio:
+        time_ms = time.time()
+        elapsed = time_ms - start_time
+        emit("position", {
+            "file": last_file,
+            "elapsed_time": elapsed,
+            "duration": current_audio['duration'],
+            "timestamp": int(time_ms)
+        })
+
+def stream_to_client():
+    # Main streaming loop for a connected client
+    last_file = None  # Track the last file sent
+    start_time = None  # When the current file started
+
+    while True:
+        # Get the current audio from the queue
+        current_audio = get_current_audio()
+
+        if current_audio:
+            # Check if the current audio has finished playing
+            if last_file and start_time and (time.time() - start_time >= current_audio['duration']):
+                last_file = None  # Reset to allow the next file
+                start_time = None
+
+            # Send audio data and update last_file if a new file is processed
+            if not last_file:
+                start_time = time.time()
+            last_file = send_audio_data(current_audio, last_file)
+
+            # Send periodic position updates
+            send_position_update(current_audio, last_file, start_time)
+
+        # Wait before the next iteration
+        time.sleep(1)  # Update every second
+
+
 # Endpoints
 @app.route('/chat-prompt', methods=['POST'])
 def chat_prompt():
@@ -119,4 +192,4 @@ def get_audio():
         return jsonify({"message": "Audio file not found"}), 404
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True)
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True, use_reloader=True)
