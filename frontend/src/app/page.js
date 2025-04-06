@@ -47,8 +47,8 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <h1 className={styles.title}>ForeverFM</h1>
-        <p className={styles.description}>
+      <h1 className={styles.title} style={{ color: '#74ff74' }}>ForeverFM</h1>
+      <p className={styles.description}>
           Your brain learns by listening. ForeverFM is the 24/7 AI podcast station built to make you fluent in topics you didn’t even know you were curious about.
         </p>
 
