@@ -18,7 +18,7 @@ export default function Home() {
 
   const fetchMessages = async () => {
     try {
-      const response = await fetch('http://localhost:5000/chat');
+      const response = await fetch('http://localhost:5001/chat');
       const data = await response.json();
       setChatMessages(data.messages);
     } catch (error) {
@@ -28,7 +28,7 @@ export default function Home() {
 
   const sendMessage = async (messageText) => {
     try {
-      const response = await fetch('http://localhost:5000/chat', {
+      const response = await fetch('http://localhost:5001/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ export default function Home() {
       
       <div className="content">
         <Header podcastTitle="Tech Talk Live" />
-        <AudioPlayer audioSrc="http://localhost:5000/audio" />
+        <AudioPlayer audioSrc="http://localhost:5001/audio" />
         <ChatPanel 
           messages={chatMessages} 
           username={username}

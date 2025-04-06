@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./AudioStreamPlayer.module.css";
 
-export default function AudioStreamPlayer({ audioSrc = "http://localhost:5000/audio" }) {
+export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/audio" }) {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [volume, setVolume] = useState(1);

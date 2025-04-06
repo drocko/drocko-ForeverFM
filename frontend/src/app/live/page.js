@@ -29,7 +29,7 @@ export default function Stream() {
         </div>
 
         {/* Stream + Chat layout */}
-        <AudioStreamPlayer audioSrc="http://localhost:5000/audio" />
+        <AudioStreamPlayer audioSrc="http://localhost:5001/audio" />
 
         <div className={styles.streamLayout}>
           <div className={styles.streamContent}>
