@@ -5,7 +5,6 @@ export default function Avatars() {
   const avatars = [
     { name: "Echo", src: "/avatar1.png", role: "Tech Analyst" },
     { name: "Nova", src: "/avatar2.png", role: "Culture Curator" },
-    { name: "Zen", src: "/avatar3.png", role: "Chill Host" },
   ];
 
   return (
