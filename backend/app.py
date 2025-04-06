@@ -26,7 +26,7 @@ def continousMakeTranscript():
         time.sleep(5)  # sim time taken for processing
         # Make a call to
         # new_script = generateContent()
-        new_script = {'speaker_name': 'Bob', 'text': 'blah blah blah'}
+        new_script = {'speaker_name': 'Chip', 'text': 'blah blah blah'}
         # here
         
         print(f"Generated script for {new_script['speaker_name']} saying: {new_script['text'][:20]}")

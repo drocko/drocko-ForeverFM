@@ -5,8 +5,8 @@ import time
 
 conv_topic = "Audio Engineering and Music"
 scripts = [
-    {"speaker_name": "Bob", "text": "Hi Alice blah blah"},
-    {"speaker_name": "Alice", "text": "Hi Bob blah blah blah"},
+    {"speaker_name": "Chip", "text": "Hi Aaliyah blah blah"},
+    {"speaker_name": "Aaliyah", "text": "Hi Chip blah blah blah"},
 ]
 
 for i in range(8):
