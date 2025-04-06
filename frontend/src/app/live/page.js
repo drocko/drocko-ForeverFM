@@ -29,7 +29,6 @@ export default function Stream() {
         </div>
 
         {/* Stream + Chat layout */}
-        <AudioStreamPlayer audioSrc="http://localhost:5001/audio" />
 
         <div className={styles.streamLayout}>
           <div className={styles.streamContent}>
@@ -41,10 +40,13 @@ export default function Stream() {
               height={400}
               className={styles.responsiveImage}
             />
+
+              <AudioStreamPlayer audioSrc="http://localhost:5001/audio" />
           </div>
 
           <div className={styles.chatWrapper}>
             <ChatBox />
+            
           </div>
 
         </div>
