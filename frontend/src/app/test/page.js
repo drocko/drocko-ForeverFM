@@ -35,7 +35,9 @@ export default function AudioPlayer() {
 
   useEffect(() => {
     audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-    socketRef.current = io("http://localhost:5000");
+
+    // Connect to the WebSocket server
+    socketRef.current = io("http://localhost:5001"); // Use http:// for Socket.IO
 
     socketRef.current.on("connect", () => {
       console.log("Connected to WebSocket");

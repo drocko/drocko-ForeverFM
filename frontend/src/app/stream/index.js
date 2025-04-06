@@ -58,7 +58,7 @@ export default function Home() {
       
       <div className="content">
         <Header podcastTitle="Tech Talk Live" />
-        <AudioPlayer audioSrc="http://localhost:5000/audio" />
+        <AudioPlayer audioSrc="http://localhost:5001/audio" />
         <ChatPanel 
           messages={chatMessages} 
           username={username}
