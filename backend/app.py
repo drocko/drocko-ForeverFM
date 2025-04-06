@@ -4,6 +4,7 @@ import threading
 import time
 import os
 
+
 # Initialize Flask app and CORS
 app = Flask(__name__)
 CORS(app)
@@ -51,8 +52,11 @@ def continousMakeAudio():
                 script = scripts[0]
         
         if script:
-            new_file_name = f"{script['speaker_name']}-{round(time.time() * 1000)}"
             
+            new_file_name = 'speech.wav' # For now
+            #new_file_name = f"{script['speaker_name']}-{round(time.time() * 1000)}"
+            
+
             # Make a call to
             # generateAudio(new_file_name)
             
