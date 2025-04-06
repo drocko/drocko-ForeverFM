@@ -23,7 +23,7 @@ MAX_Q_SIZE = 2
 should_be_generating_new_data = True
 
 # Shared variables
-conv_topic = "Baby Dolphins"
+conv_topic = "Startups and Startup Lifestyle"
 scripts = [] # [{speaker_name: '', text: '', is_audio_generated: False}, ...] # Newest last
 user_prompts = [] # [{user_name: '', text: ''}, ...] # Newest last
 audio = [] # [{speaker_name: '', duration: '', text: '', filename: ''}] # Newest last
