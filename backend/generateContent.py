@@ -17,7 +17,7 @@ def format_script_history(scripts):
 def generateContent(scripts, conv_topic, mock=True):
     if mock:
         i = random.randint(0, 7)
-        mock_file_path = f"mock_data/mock_script{i}.json"
+        mock_file_path = f"mock_data/scripts/mock_script{i}.json"
         try:
             with open(mock_file_path, "r", encoding="utf-8") as f:
                 return json.load(f)

@@ -1,14 +1,25 @@
 import os
+import random
+import shutil
 from groq import Groq
 from dotenv import load_dotenv
 load_dotenv()
 
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-def createAudio(text:str="",voice:str="Aaliyah-PlayAI",file_path:str="audio/out.wav") -> None:
-    speech_file_path = file_path
+def createAudio(text: str = "", voice: str = "Aaliyah-PlayAI", file_path: str = "audio/out.wav", mock: bool = True) -> None:
+    if mock:
+        i = random.randint(0, 7)
+        mock_audio_path = f"mock_data/audio/mock_audio{i}.wav"
+        try:
+            shutil.copy(mock_audio_path, file_path)
+            print(f"[Mock] Copied {mock_audio_path} to {file_path}")
+        except Exception as e:
+            print(f"[Mock] Failed to copy mock audio {i}:", e)
+        return
+
+    # Real audio generation
     model = "playai-tts"
-    voice = voice
     response_format = "wav"
 
     response = client.audio.speech.create(
@@ -18,4 +29,4 @@ def createAudio(text:str="",voice:str="Aaliyah-PlayAI",file_path:str="audio/out.
         response_format=response_format
     )
 
-    response.write_to_file(speech_file_path)
+    response.write_to_file(file_path)
