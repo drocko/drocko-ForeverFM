@@ -35,6 +35,11 @@ Here is the previous script so far:
 {history}
 
 Continue the podcast with the next speaker's turn. Keep the tone natural, insightful, and conversational. Be creative, stay on topic, and make the transition smooth. Limit the response to 150 words. Use only one speaker for this turn.
+
+Speaker Name is either Aaliyah or Chip.
+The return format must be SPEAKER_NAME: TEXT
+For example: Aaliyah: This is the text I will say...
+Only generate the script for one person speaking
 """
 
     response = requests.post(
@@ -110,7 +115,6 @@ def generateNewTopicContent(user_prompt_text, user_name, scripts, old_conv_topic
                 "text": "Mock script could not be loaded."
             }
         
-    scripts = scripts[:1] # we only really need the last bit
     history = format_script_history(scripts)
     prompt = f"""
         You are helping write an ongoing podcast which has been discussing **{old_conv_topic}**.

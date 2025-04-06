@@ -7,6 +7,7 @@ from getWavFileDuration import get_wav_duration
 from flask_socketio import SocketIO, emit
 import groqAudio
 import generateContent
+import random
 
 
 # Initialize Flask app and CORS
@@ -16,9 +17,9 @@ socketio = SocketIO(app, cors_allowed_origins="*")  # Allow CORS for Next.js fro
 
 # Some stupid globals
 MOCK_NUMBER = 0
-MOCKING = True
+MOCKING = False
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MAX_Q_SIZE = 3
+MAX_Q_SIZE = 1
 should_be_generating_new_data = True
 
 # Shared variables
@@ -85,7 +86,10 @@ def continousMakeAudio():
         if script and should_be_generating_new_data:
             # Generate our audio
             new_file_name = f'{round(time.time() * 10)}_audio.wav'
-            groqAudio.createAudio(script['text'], f'{script['speaker_name']}-PlayAI', f'audio/{new_file_name}', MOCKING, script['mock_number'])
+            speaker_name = script['speaker_name']
+            if speaker_name not in ['Aaliyah', 'Chip']:
+                speaker_name = random.choice(['Aaliyah', 'Chip'])
+            groqAudio.createAudio(script['text'], f'{speaker_name}-PlayAI', f'audio/{new_file_name}', MOCKING, script['mock_number'])
             
             duration = get_wav_duration(new_file_name)
             new_audio_object = {
@@ -138,7 +142,7 @@ def continousManageTopic():
                 with conv_topic_lock:
                     old_topic = conv_topic
                     
-                transition_script = generateContent.generateNewTopicContent(new_up['text'], new_up['user_name'], latest_spoken_script, old_topic, new_topic, MOCKING)
+                transition_script = generateContent.generateNewTopicContent(new_up['text'], new_up['user_name'], [latest_spoken_script], old_topic, new_topic, MOCKING)
                 transition_script['is_audio_generated'] = False
                 transition_script['mock_number'] = 'transition'
 
