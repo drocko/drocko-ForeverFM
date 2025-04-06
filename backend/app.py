@@ -1,10 +1,111 @@
-from flask import Flask, jsonify
+from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
+import threading
+import time
+import os
 
+# Initialize Flask app and CORS
 app = Flask(__name__)
+CORS(app)
 
-@app.route('/')
-def home():
-    return "Flask is running! 🎉"
+# Shared variables
+conv_topic = "Initial Topic"
+scripts = [] # [{speaker_name: '', text: ''}, ...] # Newest last
+user_prompts = [] # [{user_name: '', text: ''}, ...] # Newest last
+audio = [] # [audioFileName.wav, audioFile2Name.wav, ...] # Newest last
+
+# Lock for thread safety
+scripts_lock = threading.Lock()
+audio_lock = threading.Lock()
+conv_topic_lock = threading.Lock()
+user_prompts_lock = threading.Lock()
+
+# Thread functions
+def continousMakeTranscript():
+    while True:
+        time.sleep(5)  # sim time taken for processing
+        # Make a call to
+        # new_script = generateContent()
+        new_script = {'speaker_name': 'Bob', 'text': 'blah blah blah'}
+        # here
+        
+        print(f"Generated script for {new_script['speaker_name']} saying: {new_script['text'][:20]}")
+        
+        with scripts_lock:
+            scripts.append(new_script)
+            if len(scripts) >= 10:
+                scripts.pop(0)
+
+        # Just to test:
+        with user_prompts_lock:
+            print(user_prompts)
+        
+
+def continousMakeAudio():
+    while True:
+        time.sleep(5)  # sim time taken for processing
+        
+        script = None
+        with scripts_lock:
+            if len(scripts) >= 1:
+                script = scripts[0]
+        
+        if script:
+            new_file_name = f"{script['speaker_name']}-{round(time.time() * 1000)}"
+            
+            # Make a call to
+            # generateAudio(new_file_name)
+            
+            with audio_lock:
+                audio.append(new_file_name)
+                if len(audio) >= 10:
+                    audio.pop(0)
+            
+            print(f"Generated audio for {script['speaker_name']} saved to: {new_file_name}")
+        
+
+def continousManageTopic():
+    pass # for now
+    # while True:
+    #     time.sleep(5)  # Simulate time taken for processing
+    #     with lock:
+    #         if scripts:
+    #             convTopic = f"Updated Topic based on: {scripts[-1]}"
+
+
+# Start bg threads
+thread1 = threading.Thread(target=continousMakeTranscript, daemon=True)
+thread2 = threading.Thread(target=continousMakeAudio, daemon=True)
+thread3 = threading.Thread(target=continousManageTopic, daemon=True)
+
+thread1.start()
+thread2.start()
+thread3.start()
+
+# Endpoints
+@app.route('/chat-prompt', methods=['POST'])
+def chat_prompt():
+    user_input = request.json.get('user_prompt')
+    
+    if user_input:
+        with user_prompts_lock:
+            user_prompts.append(user_input)
+
+    return jsonify({"message": "Prompt added to queue"}), 200
+
+@app.route('/audio', methods=['GET'])
+def get_audio():
+    with audio_lock:
+        if len(audio) >= 1:
+            audio_filename = audio[0]  # remove the file from the queue
+        else:
+            return jsonify({"message": "No audio files available"}), 404
+
+    audio_path = os.path.join("path/to/audio/files", audio_filename)
+    if os.path.exists(audio_path):
+        return send_file(audio_path, mimetype='audio/wav')
+    else:
+        return jsonify({"message": "Audio file not found"}), 404
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)
