@@ -6,20 +6,14 @@ import io from "socket.io-client";
 export default function AudioPlayer() {
   const [transcript, setTranscript] = useState(""); // Current transcript
   const [position, setPosition] = useState({ elapsed: 0, duration: 0 }); // Playback position
-  const audioRef = useRef(null); // Reference to the audio element
-  const mediaSourceRef = useRef(null); // Reference to MediaSource
-  const sourceBufferRef = useRef(null); // Reference to SourceBuffer
+  const audioContextRef = useRef(null); // Reference to AudioContext
   const socketRef = useRef(null); // Reference to WebSocket
+  const audioSourceRef = useRef(null); // Reference to AudioBufferSourceNode
+  const startTimeRef = useRef(null); // Reference to track start time for position updates
 
   useEffect(() => {
-    // Initialize MediaSource for streaming audio
-    mediaSourceRef.current = new MediaSource();
-    audioRef.current.src = URL.createObjectURL(mediaSourceRef.current);
-
-    mediaSourceRef.current.addEventListener("sourceopen", () => {
-      // Set up SourceBuffer for MP3 (adjust MIME type based on your audio format)
-      sourceBufferRef.current = mediaSourceRef.current.addSourceBuffer("audio/mpeg");
-    });
+    // Initialize AudioContext for Web Audio API
+    audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
 
     // Connect to the WebSocket server
     socketRef.current = io("http://localhost:5000"); // Use http:// for Socket.IO
@@ -35,9 +29,24 @@ export default function AudioPlayer() {
 
     // Handle audio data
     socketRef.current.on("audio", (data) => {
-      if (sourceBufferRef.current && !sourceBufferRef.current.updating) {
-        // Append audio binary data to the SourceBuffer
-        sourceBufferRef.current.appendBuffer(new Uint8Array(data));
+      const audioBinaryData = new Uint8Array(data.data);
+      if (audioContextRef.current) {
+        // Decode the audio data and play it
+        audioContextRef.current.decodeAudioData(audioBinaryData.buffer, (buffer) => {
+          if (audioSourceRef.current) {
+            // Stop previous audio if it's still playing
+            audioSourceRef.current.stop();
+          }
+
+          // Create a new AudioBufferSourceNode for the new audio
+          audioSourceRef.current = audioContextRef.current.createBufferSource();
+          audioSourceRef.current.buffer = buffer;
+          audioSourceRef.current.connect(audioContextRef.current.destination);
+          audioSourceRef.current.start();
+
+          // Track the start time to calculate playback position
+          startTimeRef.current = audioContextRef.current.currentTime;
+        });
       }
     });
 
@@ -49,17 +58,25 @@ export default function AudioPlayer() {
     // Handle position updates
     socketRef.current.on("position", (data) => {
       setPosition({ elapsed: data.elapsed_time, duration: data.duration });
-      // Optional: Sync audio playback if drifted too far
-      if (audioRef.current && Math.abs(audioRef.current.currentTime - data.elapsed_time) > 1) {
-        audioRef.current.currentTime = data.elapsed_time;
+      // Sync audio playback if drifted too far
+      if (audioContextRef.current && audioSourceRef.current && startTimeRef.current) {
+        const elapsed = audioContextRef.current.currentTime - startTimeRef.current;
+        if (Math.abs(elapsed - data.elapsed_time) > 1) {
+          // Adjust the playback time to sync it
+          audioSourceRef.current.stop();
+          audioSourceRef.current.start(startTimeRef.current + data.elapsed_time);
+        }
       }
     });
 
     // Cleanup on unmount
     return () => {
       socketRef.current.disconnect();
-      if (mediaSourceRef.current.readyState === "open") {
-        mediaSourceRef.current.endOfStream();
+      if (audioSourceRef.current) {
+        audioSourceRef.current.stop();
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
       }
     };
   }, []);
@@ -67,7 +84,6 @@ export default function AudioPlayer() {
   return (
     <div style={{ padding: "20px" }}>
       <h1>ForeverFM Player</h1>
-      <audio ref={audioRef} controls autoPlay />
       <div>
         <h3>Transcript</h3>
         <p>{transcript || "Waiting for transcript..."}</p>
