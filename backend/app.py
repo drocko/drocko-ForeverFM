@@ -19,7 +19,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")  # Allow CORS for Next.js fro
 MOCK_NUMBER = 0
 MOCKING = False
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MAX_Q_SIZE = 1
+MAX_Q_SIZE = 2
 should_be_generating_new_data = True
 
 # Shared variables
