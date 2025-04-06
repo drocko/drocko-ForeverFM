@@ -44,3 +44,13 @@ a {
 .geist-header {
   font-family: var(--font-geist-sans);
 }
+
+::selection {
+  background: #136431;
+  color: white;
+}
+
+::-moz-selection {
+  background: #136431;
+  color: white;
+}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import Header from '../../components/Header';
-import AudioPlayer from '../../components/AudioPlayer';
-import ChatPanel from '../../components/ChatPanel';
+import Header from '../components/header';
+import AudioPlayer from '../components/AudioPlayer';
+import ChatPanel from '../components/ChatPanel';
 import '../styles/globals.css';
 
 export default function Home() {
