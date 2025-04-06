@@ -7,14 +7,15 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <Image
+        {/* <Image
           className={styles.logo}
-          src="/next.svg" // replace with your logo if you have one
+          src="/ForeverFM Brand Logo.png" // replace with your logo if you have one
           alt="ForeverFM logo"
-          width={180}
-          height={38}
+          width={200}
+          height={200}
+          
           priority
-        />
+        /> */}
         <h1 className={styles.title}>ForeverFM</h1>
         <p className={styles.description}>
           Welcome to ForeverFM — your 24/7 AI-generated podcast station.
@@ -32,7 +33,8 @@ export default function Home() {
         </div>
       </main>
       <footer className={styles.footer}>
-        <p>© 2025 ForeverFM 🎙️</p>
+        <p>© 2025 ForeverFM🎙️</p>
+        {/* <p>Sponsored by NVIDIA, Google, Groq and more!</p> */}
       </footer>
     </div>
   );
