@@ -50,7 +50,7 @@
 .thumbnail {
   width: 100%;
   height: 80px; /* or 80px, 60px, whatever feels good */
-  background: linear-gradient(to top right, #090e09, #2f5230);
+  background: linear-gradient(to top right, #868686, #555555);
   padding:15px;
   border-radius: 6px;
   margin-bottom: 1rem;

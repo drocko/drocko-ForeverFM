@@ -84,6 +84,41 @@ export default function Home() {
             </div>
           </div>
         </div>
+          {/* Continuous Learning Section */}
+<div className="section" style={{ textAlign: "left", maxWidth: "700px", margin: "3rem auto" }}>
+  <h2 className="sectionTitle" style={{ textAlign: "left" }}>
+    Continuous Learning, Powered by AI Conversations
+  </h2>
+  <p style={{ lineHeight: "1.6", marginTop: "1rem" }}>
+    Real conversations. Real learning. Zero friction. Our AI hosts explore topics dynamically,
+    letting you dive deep or stay casual—all based on your curiosity. Whether it's finance, tech,
+    wellness, or gaming, you're just one click away from immersive learning.
+  </p>
+  <ul style={{ marginTop: "1rem", paddingLeft: "1.25rem" }}>
+    <li>Listen 24/7 to evolving expert-like discussions</li>
+    <li>Guide the conversation without needing prior knowledge</li>
+    <li>Explore deeper layers of understanding at your own pace</li>
+  </ul>
+</div>
+
+{/* Conversational Fluency Section */}
+<div className="section" style={{ textAlign: "left", maxWidth: "700px", margin: "3rem auto" }}>
+  <h2 className="sectionTitle" style={{ textAlign: "left" }}>
+    Unlock Conversational Fluency
+  </h2>
+  <p style={{ lineHeight: "1.6", marginTop: "1rem" }}>
+    Before you can speak a new language—academic, professional, or technical—you have to hear it first.
+    Our AI hosts model fluent discussions to help you internalize how ideas are explained, challenged,
+    and connected.
+  </p>
+  <ul style={{ marginTop: "1rem", paddingLeft: "1.25rem" }}>
+    <li>Hear complex concepts in plain, contextual language</li>
+    <li>Absorb field-specific vocabulary naturally</li>
+    <li>Build a mental model of the topic without formal study</li>
+  </ul>
+</div>
+
+
       </main>
 
       <footer className={styles.footer}>
