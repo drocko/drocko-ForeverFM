@@ -1,79 +1,72 @@
-"use client"; // Mark as client-side component in Next.js
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 
 export default function AudioPlayer() {
-  const [transcript, setTranscript] = useState(""); // Current transcript
-  const [position, setPosition] = useState({ elapsed: 0, duration: 0 }); // Playback position
-  const audioContextRef = useRef(null); // Reference to AudioContext
-  const socketRef = useRef(null); // Reference to WebSocket
-  const audioSourceRef = useRef(null); // Reference to AudioBufferSourceNode
-  const startTimeRef = useRef(null); // Reference to track start time for position updates
+  const [transcript, setTranscript] = useState("");
+  const [position, setPosition] = useState({ elapsed: 0, duration: 0 });
+
+  const audioContextRef = useRef(null);
+  const socketRef = useRef(null);
+  const queueRef = useRef([]); // Queue of decoded AudioBuffers
+  const isPlayingRef = useRef(false);
+  const currentSourceRef = useRef(null);
+  const startTimeRef = useRef(null);
+
+  const playNextInQueue = () => {
+    if (queueRef.current.length === 0 || isPlayingRef.current) return;
+
+    const buffer = queueRef.current.shift();
+    const source = audioContextRef.current.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioContextRef.current.destination);
+
+    source.onended = () => {
+      isPlayingRef.current = false;
+      playNextInQueue(); // Play the next audio if available
+    };
+
+    source.start(0);
+    currentSourceRef.current = source;
+    startTimeRef.current = audioContextRef.current.currentTime;
+    isPlayingRef.current = true;
+  };
 
   useEffect(() => {
-    // Initialize AudioContext for Web Audio API
     audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
-
-    // Connect to the WebSocket server
-    socketRef.current = io("http://localhost:5000"); // Use http:// for Socket.IO
+    socketRef.current = io("http://localhost:5000");
 
     socketRef.current.on("connect", () => {
       console.log("Connected to WebSocket");
     });
 
-    // Handle new file notification
     socketRef.current.on("new_file", (data) => {
       console.log("New audio file:", data.file);
     });
 
-    // Handle audio data
     socketRef.current.on("audio", (data) => {
       const audioBinaryData = new Uint8Array(data.data);
-      if (audioContextRef.current) {
-        // Decode the audio data and play it
-        audioContextRef.current.decodeAudioData(audioBinaryData.buffer, (buffer) => {
-          if (audioSourceRef.current) {
-            // Stop previous audio if it's still playing
-            audioSourceRef.current.stop();
-          }
-
-          // Create a new AudioBufferSourceNode for the new audio
-          audioSourceRef.current = audioContextRef.current.createBufferSource();
-          audioSourceRef.current.buffer = buffer;
-          audioSourceRef.current.connect(audioContextRef.current.destination);
-          audioSourceRef.current.start();
-
-          // Track the start time to calculate playback position
-          startTimeRef.current = audioContextRef.current.currentTime;
-        });
-      }
+      audioContextRef.current.decodeAudioData(audioBinaryData.buffer)
+        .then((decodedBuffer) => {
+          queueRef.current.push(decodedBuffer);
+          playNextInQueue(); // Try playing if not already playing
+        })
+        .catch((err) => console.error("Audio decode error:", err));
     });
 
-    // Handle transcript updates
     socketRef.current.on("transcript", (data) => {
       setTranscript(data.data);
     });
 
-    // Handle position updates
     socketRef.current.on("position", (data) => {
       setPosition({ elapsed: data.elapsed_time, duration: data.duration });
-      // Sync audio playback if drifted too far
-      if (audioContextRef.current && audioSourceRef.current && startTimeRef.current) {
-        const elapsed = audioContextRef.current.currentTime - startTimeRef.current;
-        if (Math.abs(elapsed - data.elapsed_time) > 1) {
-          // Adjust the playback time to sync it
-          audioSourceRef.current.stop();
-          audioSourceRef.current.start(startTimeRef.current + data.elapsed_time);
-        }
-      }
     });
 
-    // Cleanup on unmount
     return () => {
       socketRef.current.disconnect();
-      if (audioSourceRef.current) {
-        audioSourceRef.current.stop();
+      if (currentSourceRef.current) {
+        currentSourceRef.current.stop();
       }
       if (audioContextRef.current) {
         audioContextRef.current.close();
