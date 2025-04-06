@@ -54,6 +54,7 @@ def continousMakeAudio():
             if len(scripts) >= 1:
                 script = scripts[0]
         
+        script = {'speaker_name': 'Aaliyah', 'text': 'blah blah'} # Mock
         if script:
             
             new_file_name = 'speech.wav' # For now
@@ -73,6 +74,9 @@ def continousMakeAudio():
 
             with audio_lock:
                 audio.append(new_audio_object)
+                if len(audio) > 10:
+                    audio.pop(0) # For now
+                print(audio)
             
             print(f"Generated audio for {script['speaker_name']} duration: {round(duration, 2)} sec saved to: {new_file_name}")
         
@@ -98,8 +102,10 @@ thread3.start()
 # Socket Endpoint
 @socketio.on("connect")
 def handle_connect():
-    print("Client connected")
-    threading.Thread(target=stream_to_client, daemon=True).start()
+    # Log connection and get the client's session ID
+    print("Client connected:", request.sid)
+    # Start streaming thread, passing the client's sid
+    threading.Thread(target=stream_to_client, args=(request.sid,), daemon=True).start()
 
 def get_current_audio():
     # Retrieve the oldest audio from the queue, if available
@@ -108,38 +114,39 @@ def get_current_audio():
             return audio[0]  # Returns dict with speaker_name, duration, text, filename
         return None
 
-def send_audio_data(current_audio, last_file):
+def send_audio_data(sid, current_audio, last_file):
     # Send audio file and metadata when a new file starts
     if current_audio and (not last_file or last_file != current_audio['filename']):
         filename = current_audio['filename']
-        audio_path = os.path.join("path/to/audio/files", filename)
+        audio_path = os.path.join("./audio", filename)
         
         # Notify client of the new file
-        emit("new_file", {"file": filename})
+        socketio.emit("new_file", {"file": filename}, to=sid)
         
         # Send the audio file as binary data if it exists
         if os.path.exists(audio_path):
             with open(audio_path, "rb") as f:
-                emit("audio", f.read(), binary=True)
+                audio_data = f.read()
+                socketio.emit("audio", {"data": audio_data}, to=sid)  # Send the data as part of the payload
         
         # Send the transcript associated with this audio
-        emit("transcript", {"data": current_audio['text']})
+        socketio.emit("transcript", {"data": current_audio['text']}, to=sid)
         return filename  # Return the filename to mark it as sent
     return last_file  # No new file, keep the last one
 
-def send_position_update(current_audio, last_file, start_time):
+def send_position_update(sid, current_audio, last_file, start_time):
     # Send playback position if there's an active audio file
     if last_file and current_audio:
         time_ms = time.time()
         elapsed = time_ms - start_time
-        emit("position", {
+        socketio.emit("position", {
             "file": last_file,
             "elapsed_time": elapsed,
             "duration": current_audio['duration'],
             "timestamp": int(time_ms)
-        })
+        }, to=sid)
 
-def stream_to_client():
+def stream_to_client(sid):
     # Main streaming loop for a connected client
     last_file = None  # Track the last file sent
     start_time = None  # When the current file started
@@ -157,10 +164,10 @@ def stream_to_client():
             # Send audio data and update last_file if a new file is processed
             if not last_file:
                 start_time = time.time()
-            last_file = send_audio_data(current_audio, last_file)
+            last_file = send_audio_data(sid, current_audio, last_file)
 
             # Send periodic position updates
-            send_position_update(current_audio, last_file, start_time)
+            send_position_update(sid, current_audio, last_file, start_time)
 
         # Wait before the next iteration
         time.sleep(1)  # Update every second
