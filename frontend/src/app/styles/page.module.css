@@ -32,6 +32,7 @@
   flex-direction: column;
   gap: 32px;
   grid-row-start: 2;
+  max-width: 36rem;
 }
 
 .main ol {
@@ -163,6 +164,6 @@ a.secondary {
 
 @media (prefers-color-scheme: dark) {
   .logo {
-    filter: invert();
+    /* filter: invert(); */
   }
 }

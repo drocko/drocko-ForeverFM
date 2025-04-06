@@ -24,7 +24,7 @@ export default function Stream() {
         </div>
       </main>
       <footer className={styles.footer}>
-        <p>© 2025 ForeverFM. All content generated with ❤️</p>
+        <p>© 2025 ForeverFM🎙️</p>
       </footer>
     </div>
   );
