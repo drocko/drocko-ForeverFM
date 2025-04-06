@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "../styles/page.module.css";
 import Avatars from "../../components/Avatar";
+import AudioStreamPlayer from "../../components/AudioStreamPlayer";
 
 export default function Stream() {
   const [isPlaying] = useState(true);
@@ -39,10 +40,13 @@ export default function Stream() {
               height={400}
               className={styles.responsiveImage}
             />
+
+              <AudioStreamPlayer audioSrc="http://localhost:5001/audio" />
           </div>
 
           <div className={styles.chatWrapper}>
             <ChatBox />
+            
           </div>
 
         </div>

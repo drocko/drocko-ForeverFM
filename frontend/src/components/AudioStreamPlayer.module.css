@@ -1,0 +1,48 @@
+.player {
+    background-color: #111;
+    border-radius: 12px;
+    padding: 1rem;
+    color: #eee;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.25rem;
+    flex-direction: column;
+  }
+  
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #22c55e;
+    border: none;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .button:hover {
+    background-color: #16a34a;
+  }
+  
+  .slider {
+    width: 120px;
+    height: 6px;
+    cursor: pointer;
+    accent-color: #22c55e;
+    background: #333;
+    border-radius: 999px;
+  }
+  
