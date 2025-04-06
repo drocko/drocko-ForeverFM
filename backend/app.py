@@ -3,6 +3,8 @@ from flask_cors import CORS
 import threading
 import time
 import os
+from getWavFileDuration import get_wav_duration
+
 
 # Initialize Flask app and CORS
 app = Flask(__name__)
@@ -12,7 +14,7 @@ CORS(app)
 conv_topic = "Initial Topic"
 scripts = [] # [{speaker_name: '', text: ''}, ...] # Newest last
 user_prompts = [] # [{user_name: '', text: ''}, ...] # Newest last
-audio = [] # [audioFileName.wav, audioFile2Name.wav, ...] # Newest last
+audio = [] # [{speaker_name: '', duration: '', text: '', filename: ''}] # Newest last
 
 # Lock for thread safety
 scripts_lock = threading.Lock()
@@ -51,17 +53,26 @@ def continousMakeAudio():
                 script = scripts[0]
         
         if script:
-            new_file_name = f"{script['speaker_name']}-{round(time.time() * 1000)}"
             
+            new_file_name = 'speech.wav' # For now
+            #new_file_name = f"{script['speaker_name']}-{round(time.time() * 1000)}"
+            
+
             # Make a call to
             # generateAudio(new_file_name)
             
+            duration = get_wav_duration(new_file_name)
+            new_audio_object = {
+                'speaker_name': script['speaker_name'],
+                'duration': duration,
+                'text': script['text'],
+                'filename': new_file_name
+            }
+
             with audio_lock:
-                audio.append(new_file_name)
-                if len(audio) >= 10:
-                    audio.pop(0)
+                audio.append(new_audio_object)
             
-            print(f"Generated audio for {script['speaker_name']} saved to: {new_file_name}")
+            print(f"Generated audio for {script['speaker_name']} duration: {round(duration, 2)} sec saved to: {new_file_name}")
         
 
 def continousManageTopic():
