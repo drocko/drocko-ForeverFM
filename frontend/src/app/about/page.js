@@ -8,7 +8,8 @@ export default function About() {
       <main className={styles.main}>
         {/* Hero */}
         <section style={{ textAlign: "center" }}>
-          <h1 className={styles.title}>Meet the Team Behind ForeverFM</h1>
+
+          <h1 className={styles.title}>Meet the Forever Team</h1>
 
           <div className={styles.imageContainer}>
             <Image
@@ -20,28 +21,41 @@ export default function About() {
               priority
             />
           </div>
+
+          <Image
+              src="/ForeverFM Microphone Icon.png"
+              alt="Podcast simulation"
+              width={25}
+              height={35}
+            />
+
+
           <p style={{ marginTop: "1rem", fontWeight: "500" }}>
-            Made by 4 BeaverHackers 🦫
+            The Original Beaverhackers 🦫
           </p>
+          
         </section>
 
         {/* Story */}
         <section style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <p className={styles.description}>
-            ForeverFM is an ongoing experiment in AI storytelling—created live during Oregon State University's BeaverHacks.
-            We're exploring the frontier of language models, voice synthesis, and the vibe of collaborative creativity.
+          ForeverFM is a collaborative experiment born at Oregon State University's BeaverHacks—where four students came together to explore the frontier of AI-driven storytelling.
+          We're exploring the frontier of language models, voice synthesis, and the vibe of collaborative creativity.
           </p>
 
           <p className={styles.description}>
-            No scripts. No hosts. Just continuous, real-time thoughts that talk back.
-            We're blending spontaneity with structure—tuning personas, breaking pipelines, and constantly learning from it all.
+            Huge thanks to the event organizers and sponsors who made BeaverHacks possible. Without your support, this project—and this team—wouldn’t exist.
           </p>
 
-          <p className={styles.description}>
-            Whether you're just tuning in or building your own systems—we see you. You’re part of the frequency too.
+          <p className={styles.description} style={{ fontStyle: "italic" }}>
+            Signing off with optimism, determination, and growth—  
+            <br />
+            —The ForeverFM Team 🎙️
           </p>
+          
         </section>
 
+      
         {/* CTA */}
         <div className={styles.ctas}>
           <Link href="/" className={styles.primary}>
