@@ -85,6 +85,8 @@ export default function Home() {
           </div>
         </div>
           {/* Continuous Learning Section */}
+<section>
+
 <div className="section" style={{ textAlign: "left", maxWidth: "700px", margin: "3rem auto" }}>
   <h2 className="sectionTitle" style={{ textAlign: "left" }}>
     Continuous Learning, Powered by AI Conversations
@@ -117,6 +119,7 @@ export default function Home() {
     <li>Build a mental model of the topic without formal study</li>
   </ul>
 </div>
+</section>
 
 
       </main>
