@@ -16,7 +16,9 @@ def createAudio(text: str = "", voice: str = "Aaliyah-PlayAI", file_path: str = 
             print(f"[Mock] Copied {mock_audio_path} to {file_path}")
         except Exception as e:
             print(f"[Mock] Failed to copy mock audio {mock_number}:", e)
-        return
+        mock_number += 1
+        if mock_number > 7:
+            mock_number = 0
 
     # Real audio generation
     model = "playai-tts"
