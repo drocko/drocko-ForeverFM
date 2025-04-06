@@ -1,0 +1,96 @@
+.section {
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  margin: 1rem 0 0.5rem;
+  color: var(--foreground);
+}
+
+.scrollRowWrapper {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.scrollRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  min-width: max-content;
+}
+
+.card {
+  flex: 0 0 auto;
+  width: 200px;
+  height: 280px;
+  background-color: #222;
+  border-radius: 12px;
+  padding: 1rem;
+  color: white;
+  text-decoration: none;
+  scroll-snap-align: start;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.thumbnail {
+  width: 100%;
+  height: 80px; /* or 80px, 60px, whatever feels good */
+  background: linear-gradient(to top right, #868686, #555555);
+  padding:15px;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+
+.thumbImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: invert(1); /* <-- this inverts black to white */
+}
+
+@media (prefers-color-scheme: dark) {
+  .thumbImage {
+    filter: invert(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    width: 160px;
+    height: 240px;
+    padding: 0.75rem;
+  }
+
+  .thumbnail {
+    height: 100px;
+  }
+
+  .card h3 {
+    font-size: 1rem;
+  }
+
+  .card p {
+    font-size: 0.85rem;
+  }
+}

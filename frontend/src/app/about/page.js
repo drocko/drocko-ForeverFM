@@ -9,14 +9,14 @@ export default function About() {
         {/* Hero */}
         <section style={{ textAlign: "center" }}>
 
-          <h1 className={styles.title}>Meet the Forever Team</h1>
+          <h1 className={styles.title}>The Forever Team</h1>
 
           <div className={styles.imageContainer}>
             <Image
               src="/About-Photo-Styled.png"
               alt="ForeverFM Team"
-              width={300}
-              height={300}
+              width={250}
+              height={250}
               className={`${styles.teamPhoto} ${styles.primary}`}
               priority
             />
@@ -31,7 +31,7 @@ export default function About() {
 
 
           <p style={{ marginTop: "1rem", fontWeight: "500" }}>
-            The Original Beaverhackers 🦫
+            Just Four Beaverhackers
           </p>
           
         </section>
@@ -39,7 +39,7 @@ export default function About() {
         {/* Story */}
         <section style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <p className={styles.description}>
-          ForeverFM is a collaborative experiment born at Oregon State University's BeaverHacks—where four students came together to explore the frontier of AI-driven storytelling.
+          ForeverFM is a collaborative experiment born at Oregon State University's 🦫 BeaverHacks—where four students came together to explore the frontier of AI-driven storytelling.
           We're exploring the frontier of language models, voice synthesis, and the vibe of collaborative creativity.
           </p>
 
@@ -50,7 +50,7 @@ export default function About() {
           <p className={styles.description} style={{ fontStyle: "italic" }}>
             Signing off with optimism, determination, and growth—  
             <br />
-            —The ForeverFM Team 🎙️
+            —The ForeverFM Team <span style={{ fontStyle: "normal" }}> 🎙️</span>
           </p>
           
         </section>
