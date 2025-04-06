@@ -1,10 +1,9 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
-import styles from "./AudioStreamPlayer.module.css";
 import io from "socket.io-client";
 
-export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/audio" }) {
+export default function AudioPlayer() {
   const [transcript, setTranscript] = useState("");
   const [position, setPosition] = useState({ elapsed: 0, duration: 0 });
   const [isPlaying, setIsPlaying] = useState(false);
@@ -17,9 +16,6 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
   const startTimeRef = useRef(null);
   const offsetTimeRef = useRef(0);
   const gainNodeRef = useRef(null);
-
-  const audioRef = useRef(null);
-  const [volume, setVolume] = useState(1);
 
   const togglePlayback = () => {
     if (!audioContextRef.current) {
@@ -113,56 +109,42 @@ export default function AudioStreamPlayer({ audioSrc = "http://localhost:5001/au
     }
   }, [isReady, isPlaying]);
 
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-      if (isPlaying) {
-        audioRef.current.play().catch(console.error);
-      } else {
-        audioRef.current.pause();
-      }
-    }
-  }, [isPlaying, volume]);
-
   return (
-    <div className={styles.player}>
-      <audio ref={audioRef} src={audioSrc} autoPlay loop />
-
-      <div className={styles.controls}>
-        <button onClick={togglePlayback} className={styles.button}>
-          <Image
-            src={isPlaying ? "/stream-pause.svg" : "/stream-play.svg"}
-            alt={isPlaying ? "Pause" : "Play"}
-            width={18}
-            height={18}
-            style={{ filter: "invert(1)" }}
-          />
+    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
+      <h1>ForeverFM Player</h1>
+      <div style={{ marginBottom: "20px" }}>
+        <button 
+          onClick={togglePlayback}
+          style={{
+            padding: "10px 20px",
+            fontSize: "16px",
+            backgroundColor: isPlaying ? "#ff5555" : "#55aa55",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer"
+          }}
+        >
+          {isPlaying ? "Pause" : "Play"}
         </button>
-
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          value={volume}
-          onChange={(e) => setVolume(parseFloat(e.target.value))}
-          className={styles.slider}
-        />
-
-        <button onClick={() => setVolume(volume > 0 ? 0 : 1)} className={styles.button}>
-          <Image
-            src={volume > 0 ? "/volume-high.svg" : "/volume-slash.svg"}
-            alt={volume > 0 ? "Volume on" : "Muted"}
-            width={18}
-            height={18}
-            style={{ filter: "invert(1)" }}
-          />
-        </button>
+        <span style={{ marginLeft: "15px", fontSize: "14px" }}>
+          Current time: {Math.floor(position.elapsed / 60)}:{String(Math.floor(position.elapsed % 60)).padStart(2, '0')}
+        </span>
       </div>
-      <p>
-        {Math.floor(position.elapsed / 60)}:{String(Math.floor(position.elapsed % 60)).padStart(2, '0')} / 
-        {Math.floor(position.duration / 60)}:{String(Math.floor(position.duration % 60)).padStart(2, '0')}
-      </p>
+      <div>
+        <h3>Playback Position</h3>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <progress
+            value={position.elapsed}
+            max={position.duration || 100}
+            style={{ width: "100%", height: "15px" }}
+          />
+        </div>
+        <p>
+          {Math.floor(position.elapsed / 60)}:{String(Math.floor(position.elapsed % 60)).padStart(2, '0')} / 
+          {Math.floor(position.duration / 60)}:{String(Math.floor(position.duration % 60)).padStart(2, '0')}
+        </p>
+      </div>
     </div>
   );
 }
