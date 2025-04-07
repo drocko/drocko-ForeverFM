@@ -34,7 +34,8 @@ You are helping write an ongoing podcast about **{conv_topic}**.
 Here is the previous script so far:
 {history}
 
-Continue the podcast with the next speaker's turn. Keep the tone natural, insightful, and conversational. Be creative, stay on topic, and make the transition smooth. Limit the response to 150 words. Use only one speaker for this turn.
+Continue the podcast with the next speaker's turn. Keep the tone natural, insightful, and conversational. Be creative, stay on topic,
+and make the transition smooth. Limit the response to 150 words. Use only one speaker for this turn.
 
 Speaker Name is either Aaliyah or Chip.
 The return format must be SPEAKER_NAME: TEXT
